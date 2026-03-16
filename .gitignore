@@ -1,0 +1,33 @@
+# Binaries (root-level build output only)
+/shadowgo
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
+# Output
+*.out
+
+# Go workspace
+go.work
+
+# Secrets and local config (never commit)
+.env
+.env.*
+!.env.example
+*.local
+tokens/
+*.token.json
+
+# Local config dir if used inside repo
+.config/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
