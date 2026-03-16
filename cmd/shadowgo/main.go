@@ -16,6 +16,7 @@ import (
 	"github.com/agorator/shadowgo/internal/config"
 	"github.com/agorator/shadowgo/internal/llm"
 	"github.com/agorator/shadowgo/internal/orchestrator"
+	"github.com/agorator/shadowgo/internal/post"
 	"github.com/agorator/shadowgo/internal/recorder"
 )
 
@@ -31,6 +32,8 @@ func main() {
 
 	screenshot := flag.Bool("screenshot", false, "Capture a screenshot (uses grim)")
 	analyze := flag.Bool("analyze", false, "Send screenshot to LLM for marketability analysis (OpenAI/OpenRouter)")
+	postX := flag.Bool("post", false, "Post screenshot to X (Twitter) after capture")
+	caption := flag.String("caption", "", "Caption for the post (use with -post)")
 	prompt := flag.String("prompt", "", "Custom prompt for LLM analysis (overrides SHADOWGO_LLM_PROMPT)")
 	region := flag.Bool("region", false, "Use slurp to select screen region (requires slurp)")
 	webcam := flag.Bool("webcam", false, "Also record webcam via v4l2")
@@ -43,7 +46,7 @@ func main() {
 
 	// Screenshot mode: one-shot image capture
 	if *screenshot {
-		path, err := runScreenshotMode(context.Background(), cfg, *region, *analyze, *prompt, log)
+		path, err := runScreenshotMode(context.Background(), cfg, *region, *analyze, *postX, *caption, *prompt, log)
 		if err != nil {
 			log.Error("screenshot failed", "error", err)
 			os.Exit(1)
@@ -100,7 +103,7 @@ func main() {
 	log.Info("ShadowGo stopped")
 }
 
-func runScreenshotMode(ctx context.Context, cfg *config.Config, useRegion bool, analyze bool, promptOverride string, log *slog.Logger) (string, error) {
+func runScreenshotMode(ctx context.Context, cfg *config.Config, useRegion bool, analyze bool, postX bool, caption string, promptOverride string, log *slog.Logger) (string, error) {
 	slurpAvail, _ := recorder.DetectRegionTools()
 
 	var regionPtr *recorder.Region
@@ -126,6 +129,19 @@ func runScreenshotMode(ctx context.Context, cfg *config.Config, useRegion bool, 
 			return path, fmt.Errorf("LLM analysis failed: %w", err)
 		}
 		log.Info("marketability analysis", "result", analysis)
+	}
+
+	if postX {
+		token, err := auth.LoadXToken(cfg.ConfigDir)
+		if err != nil {
+			return path, fmt.Errorf("load X token (run 'shadowgo login' first): %w", err)
+		}
+		// X allows media-only tweets; empty caption is fine
+		tweetID, err := post.PostImage(ctx, token, path, caption)
+		if err != nil {
+			return path, fmt.Errorf("post to X failed: %w", err)
+		}
+		log.Info("posted to X", "tweet_id", tweetID)
 	}
 
 	return path, nil

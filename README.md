@@ -75,6 +75,12 @@ shadowgo /login
 # Screenshot + LLM marketability analysis (OpenRouter/OpenAI)
 ./shadowgo -screenshot -analyze
 
+# Screenshot + post to X with caption
+./shadowgo -screenshot -post -caption "Check out this screenshot!"
+
+# Screenshot, analyze, and post
+./shadowgo -screenshot -analyze -post -caption "Marketability tested"
+
 # With custom prompt
 ./shadowgo -screenshot -analyze -prompt "Is this UI clear and professional?"
 

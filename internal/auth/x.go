@@ -129,3 +129,17 @@ func SaveXToken(configDir string, token *XToken) error {
 	}
 	return os.WriteFile(path, data, 0600)
 }
+
+// LoadXToken loads the token from ~/.config/shadowgo/tokens/x.json.
+func LoadXToken(configDir string) (*XToken, error) {
+	path := filepath.Join(configDir, "tokens", "x.json")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var token XToken
+	if err := json.Unmarshal(data, &token); err != nil {
+		return nil, err
+	}
+	return &token, nil
+}
