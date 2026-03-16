@@ -22,6 +22,29 @@ Background recording service for **Screen**, **Audio**, and **Webcam** on Linux 
 
 ## Build & Install
 
+**Pre-built binaries** (from [Releases](https://github.com/johnstryder/shadowgo/releases)):
+
+```
+https://github.com/johnstryder/shadowgo/releases/latest/download/shadowgo-<os>-<arch>
+```
+
+| Platform | Download |
+|----------|----------|
+| Linux amd64 | `shadowgo-linux-amd64` |
+| Linux arm64 | `shadowgo-linux-arm64` |
+| macOS amd64 | `shadowgo-darwin-amd64` |
+| macOS arm64 (Apple Silicon) | `shadowgo-darwin-arm64` |
+| Windows amd64 | `shadowgo-windows-amd64.exe` |
+
+```bash
+# Example: Linux
+curl -sL https://github.com/johnstryder/shadowgo/releases/latest/download/shadowgo-linux-amd64 -o shadowgo
+chmod +x shadowgo
+sudo mv shadowgo /usr/local/bin/
+```
+
+**Build from source:**
+
 ```bash
 # Build locally
 go build -o shadowgo ./cmd/shadowgo
